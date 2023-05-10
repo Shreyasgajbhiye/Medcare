@@ -1,0 +1,1622 @@
+--public.employee definition
+--create table table_name(column datatype);
+
+-- Drop table
+--drop table table_name;
+
+-- DROP TABLE public.employee;
+--insert into table_name(column_name) values (value);
+
+--constraint syntax
+--constraint constrains_name type (data_type);
+
+
+create table employee(id bigserial, name varchar(30), designation varchar(30), salary double precision );
+
+drop table employee;
+
+--DDL script
+CREATE TABLE public.employee (
+	id bigserial NOT null ,
+	"name" varchar(30) not null,
+	designation varchar(30) not null,
+	salary float8 default 100.0 not null check (salary>100),
+	constraint name_designation_unique  unique(name,designation),
+	primary key (id)
+);
+
+
+insert into employee(name,designation,salary) values('shreyash', 'CA',2000);
+insert into employee(name,designation, salary) values('shreyash', 'Doctor', 5000.00);
+
+
+create table users(id bigserial, user_name varchar(50), email varchar(30));
+
+-- public.users definition
+
+-- Drop table
+
+-- DROP TABLE public.users;
+
+drop table users;
+
+CREATE TABLE public.users (
+	id bigserial primary key,
+	user_name varchar(50) not null unique,
+	email varchar(30) NULL
+);
+
+insert into users(user_name, email) values ('shreyashgajbhiye', 'shreyash@gmail.com');
+
+create table student (id bigserial, name varchar(40), email varchar(30), department varchar(30));
+
+-- public.student definition
+
+-- Drop table
+
+-- DROP TABLE public.student;
+
+drop table student;
+
+CREATE TABLE public.student (
+	id bigserial primary key,
+	"name" varchar(40) not null,
+	email varchar(30) not null,
+	department varchar(30) not null default 'CM',
+	constraint name_email_constraint unique(name,email)
+);
+
+insert into student (name,email) values ('Shreyash', 'sg@gmail.com');
+insert into student (name, email) values ('Shreyash', 'shreyash@gmail.com');
+
+
+--NULL is used in SQL to indicate that a value doesn't exist in the database. 
+--It's not to be confused with an empty string or a zero value. While NULL indicates the absence of a value, the empty string and zero both represent actual values.
+
+
+
+
+--foreign key
+
+
+
+drop table users;
+create table users(id bigserial, name varchar(30), address jsonb);
+
+CREATE TABLE public.users (
+	id bigserial primary key,
+	"name" varchar(30) NULL,
+	address varchar(30) NULL
+);
+
+insert into users (name,address) values ('Shreyash', 'Amravati');
+insert into users (name,address) values ('Akash', 'Pune');
+
+drop table product;
+create table product(id bigserial, name varchar(30), price double precision, description varchar(60));
+
+
+
+CREATE TABLE public.product (
+	id bigserial primary key,
+	"name" varchar(30) NULL,
+	price float8 NULL,
+	description varchar(60) NULL
+);
+
+insert into product(name,price,description) values('Cococola',30.0,'Soft drink');
+insert into product(name,price,description) values('Pepsi',35.0,'Refreshment');
+
+
+
+
+drop table orders;
+create table orders(
+id bigserial primary key,
+user_id bigint default 00,
+product_id bigint default 123,
+quantity integer,
+total double precision,
+constraint fk_orders_users_user_id foreign key(user_id) references users(id) on delete set default ,
+constraint fk_orders_products_product_id foreign key(product_id) references product(id) on delete set null 
+);
+
+--On delete cascade : to delete rows from child table automatically when row from parent table is deleted
+-- On delete set notnull 
+--On delete set default
+
+insert into orders(user_id, product_id, quantity, total) values (1,3,2,60.00);
+insert into orders(user_id, product_id, quantity, total) values(2,4,1,35.00);
+insert into orders(user_id, product_id, quantity, total) values (1,4,2,60.00);
+
+delete from product  where id = 2;
+
+delete from orders where id = 2 and product_id = 3;
+
+delete from orders where id = 1 or user_id = 2;
+
+
+
+
+
+
+
+
+--foreign key homework
+
+--1st example
+--table 1
+drop table student;
+
+create table student(
+id bigserial primary key,
+name varchar(30),
+department varchar(30)
+);
+
+insert into student(name, department) values ('Shreyash', 'Computer');
+insert into student(name, department) values ('Aditya', 'Computer');
+insert into student(name, department) values ('Jay', 'Computer');
+
+--table 2
+drop table average;
+
+create table average(
+id bigserial primary key,
+student_id bigint,
+average double precision,
+constraint fk_average_student_student_id foreign key(student_id) references student(id)
+);
+
+insert into average(student_id, average) values (1,88.67);
+insert into average(student_id, average) values (2,65.88);
+insert into average(student_id, average) values (3,38.00);
+
+--add column
+alter table average add column status varchar(10);
+
+--add constraint
+alter table average add constraint check_status check(status!= null);
+
+--change datatype
+alter table average alter column status type text;
+--In other platforms : alter table average modify column status taxt
+
+--rename column name
+alter table average rename column status to pass_fail;
+
+--rename table name
+alter table average rename to pointer;
+
+--rename table table
+alter table pointer rename to average;
+
+--rename column name
+alter table average rename column pass_fail to status;
+
+--change column datatype
+alter table average alter column status type varchar(20);
+
+--delete column
+alter table average drop column status;
+
+delete from average where id=2;
+
+
+
+
+
+
+--2nd example
+
+--table 1
+create table insta_user(
+id bigserial primary key,
+name varchar(20),
+);
+
+insert into insta_user(name) values ('Shreyash');
+insert into insta_user(name) values ('Soham');
+
+
+--table 2
+drop table post;
+create table post(
+id bigserial primary key,
+user_id bigint,
+img bytea default null
+);
+
+insert into post (user_id) values (1);
+
+--add column
+alter table post add column created_at timestamp;
+
+--change column's datatype
+alter table post alter column created_on type date;
+--alter table post modify column created_on date;
+
+--change column name
+alter table post rename column created_at to created_on;
+
+--add constraint
+alter table post add constraint post_not_null check(img != null);
+
+--drop constraint
+alter table post drop constraint post_not_null;
+
+--delete data in table
+delete from post where id = 1;
+
+--truncate table 
+truncate table post;
+
+
+
+
+
+
+
+
+--DML commands
+
+insert into employee(name,designation,salary) values('Yogesh','Assistance',3000.00);
+insert into employee(name,designation,salary) values('Jay','Peon',1000.00);
+
+--update
+--where clus is used to filter the data
+update employee set name = 'Ramesh' where name = 'Yogesh';
+update employee set name = 'ABC' where salary > 1000;
+update employee set salary = 5000.00 where name <> 'ABC';
+update employee set salary = 6000.00 where name != 'ABC';
+update employee set name = 'Yash' , salary = 2000.00 where designation = 'Peon';
+
+update employee set name = 'Pratham' where name = 'Ramesh';
+update bank set name = 'Ujjwal' where name = 'Sagar';
+
+--delete with operators : NOT, AND, OR
+delete from employee where not name  = 'Ramesh';
+
+drop table employee;
+insert into employee (name,designation,salary) values ('Shreyash', 'CEO', 80000.00);
+insert into employee (name,designation,salary) values ('Aditya', 'Manager', 60000.00);
+insert into employee (name,designation,salary) values ('Soham', 'Assistance', 50000.00);
+insert into employee (name,designation,salary) values ('Jay', 'Peon', 80000.00);
+
+
+--select query
+select * from employee;
+select * from orders where id = 3;
+select name,address from users;
+
+
+explain analyse select * from employee;
+
+
+update student set department = 'Civil' where id = 3;
+
+select * from student where id = 1;
+select id from student;
+
+explain analyse select * from student;
+
+
+drop table employee;
+
+create table employee(
+id bigserial primary key,
+name varchar(30),
+salary double precision,
+city text);
+
+insert into employee(name,salary,city) values('Shreyash' , 20000.00,'Amravati');
+insert into employee(name,salary,city) values('Yogesh' , 30000.00,'Amravati');
+insert into employee(name,salary,city) values('Aditya' , 40000.00,'Amravati');
+insert into employee(name,salary,city) values('Soham' , 5000.00,'Pune');
+insert into employee(name,salary,city) values('Yash' , 6000.00,'Pune');
+insert into employee(name,salary,city) values('Nikhil' , 70000.00,'Kolhapur');
+insert into employee(name,salary,city) values('Atharva' , 80000.00,'Akola');
+insert into employee(name,salary,city) values('Ujjwal' ,90000.00,'Akola');
+
+select max(salary) - min(salary) from employee;
+
+
+--between (inclusive)
+select * from employee where salary between  5000.00  and 20000.00;
+select * from employee where salary >= 5000.00 and salary <= 20000.00;
+
+--in
+select * from employee where city ='Amravati' or city = 'Akola' or city = 'Buldhana';
+select  * from employee where city in ('Amravati','Akola');
+
+--to minimize the or querey
+select * from orders where id in (select id  from orders where user_id = 1);
+
+
+
+
+
+--Practice
+drop table students;
+
+create table students(
+id bigserial primary key,
+name varchar(30),
+email varchar(30) ,
+department varchar(30)
+);
+
+insert into students (name,email,department) values ('Shreyash','shreyash@gmail.com','Computer');
+insert into students (name,email,department) values ('Soham','soham@gmail.com','Computer');
+insert into students (name,email,department) values ('Aditya','aditya@gmail.com','Computer');
+insert into students (name,email,department) values ('Yogesh','yogesh@gmail.com','Computer');
+insert into students (name,email,department) values ('Sagar','sagar@gmail.com','Computer');
+insert into students (name,email,department) values ('Jay','jay@gmail.com','Computer');
+
+delete from students where id = 5;
+
+
+alter table students rename column department to branch;
+
+alter table students rename branch to department;
+
+alter table students alter column branch type text;
+
+alter table students rename to gpa_students;
+
+alter table gpa_students rename to students;
+
+alter table students add constraint name_not_null check(name<>null);
+
+alter table students add column created_at timestamp;
+
+alter table students drop column created_at;
+
+create table computer(
+branch_id varchar(20) default 'Computer',
+student_id bigint,
+constraint fk_student_id foreign key (student_id) references students(id))
+;
+
+select * from student where id = 1;
+
+update students set branch ='Civil' where name = 'Jay'; 
+
+explain analyse select * from students;
+
+select * from students where id=1 or id=2;
+
+select name from students where id in (select id from students where id in(1,2));
+
+delete from  students ;
+
+select name from students where id between 6 and 8;
+
+
+
+
+
+--aggregate functions
+--(total)
+
+--count(just count all non null data)
+select count (*) from computer;
+select count (*) from students;
+
+--distinct
+select count  (distinct name) from students;
+select distinct department from students;
+select count (distinct department) from students;
+
+--sum
+select sum (id) from students;
+select sum (salary) from employee ;
+
+--min
+select min (salary) from employee;
+
+--max
+select max (salary) from employee;
+
+--average
+select avg (salary) from employee;
+
+
+select sum(salary) /count (salary) from employee;
+
+select sum (salary) from employee;
+--(682,000.0)
+
+
+--giving name to column
+select count(salary) as total_salary from employee;
+--(16)
+
+
+--extract function (timestamp)
+
+--order by(by default ascending)
+
+select * from student order by name;
+
+--limit
+select * from student order by id desc limit 1;
+
+--(restrict the data return by querey)
+select *  from employee order by name  asc limit 5;
+
+
+--offset
+--offest = (page-1) * items per page
+select * from students order by id limit 2 offset 0;
+
+select * from students order by id limit 2 offset 2;
+
+select * from students order by id limit 2 offset 4;
+
+select * from students order by id limit 2 offset 6;
+
+--offset by 10 (0-9
+--10-19
+--20-29)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Test
+
+--1 CREATE TABLES
+create table student_details(
+id bigserial primary key,
+firstname varchar(20),
+lastname varchar(20),
+dob date,
+branch varchar(30)
+);
+
+insert into student_details(firstname,lastname,dob,branch) values ('Shreyash','Gajbhiye','2004-10-14','Computer');
+insert into student_details(firstname,lastname,dob,branch) values ('Aditya','Kanikar','20049-10-20','Computer');
+insert into student_details(firstname,lastname,dob,branch) values ('Yogesh','Yadav','2003-9-3','Computer');
+insert into student_details(firstname,lastname,dob,branch) values ('Soham','Ambarte','2003-9-23','Computer');
+insert into student_details(firstname,lastname,dob,branch) values ('Sagar','Mishra','2004-2-28','Computer');
+
+
+create table course(
+id bigserial primary key,
+name varchar(30),
+credit integer,
+total_marks double precision
+);
+
+insert into course(name,credit,total_marks) values('SPM',32,175);
+insert into course(name,credit,total_marks) values('DCN',31,100);
+insert into course(name,credit,total_marks) values('JAVA',32,100);
+insert into course(name,credit,total_marks) values('DBMS',32,175);
+
+create table registration(
+id bigserial primary key,
+student_id bigint,
+course_id bigint,
+paid double precision,
+constraint fk_student_id foreign key (student_id) references student_details(id),
+constraint fk_course_id foreign key (course_id) references course(id)
+);
+
+insert into registration(student_id,course_id,paid) values (1,1,2500);
+insert into registration(student_id,course_id,paid) values (2,2,2000);
+insert into registration(student_id,course_id,paid) values (3,3,3000);
+
+
+
+--MARKS 
+create table marks_obtain(
+id bigserial primary key,
+student_id bigint,
+spm integer,
+dcn integer,
+java integer,
+dbms integer);
+
+insert into marks_obtain (student_id,spm,dcn,java,dbms) values(1,168,92,97,95);
+
+
+--2 CREATE TABLES FOR E-COMMERCE DATABASE DESIGN
+
+create table address(
+id bigserial primary key,
+local_address varchar(30),
+hint varchar(30),
+city varchar(30)
+);
+
+insert into address(local_address,hint,city) values('Yashoda nagar','Near lifeline hospital','Amravati');
+insert into address(local_address,hint,city) values('Jivam jyoti colony','Hari om apratment','Amravati');
+insert into address(local_address,hint,city) values('Shivaji nagar','Near goghle glocery store','Pune');
+insert into address(local_address,hint,city) values('Kalyan nagar','','Amravati');
+
+drop table E_commerce_users;
+
+create table E_commerce_users(
+id bigserial primary key,
+name varchar(30),
+email varchar(30),
+user_address bigint,
+constraint fk_address foreign key (user_address) references address(id));
+	
+insert into E_commerce_users (name,email,user_address) values ('Shreyash','sg@gmail.com',1);
+insert into E_commerce_users (name,email,user_address) values ('Aditya','sg@gmail.com',2);
+insert into E_commerce_users (name,email,user_address) values ('Yogesh','sg@gmail.com',3);
+insert into E_commerce_users (name,email,user_address) values ('Soham','sg@gmail.com',4);
+
+
+create table products(
+id bigserial primary key,
+name varchar(30),
+price double precision);
+
+insert into products(name,price) values('Coca cola',40.00);
+insert into products(name,price) values('Pepsi',35.00);
+insert into products(name,price) values('One plus nord 2',30000.00);
+insert into products(name,price) values('Samsung S21',1000020.00);
+
+drop table orders;
+
+create table orders(
+id bigserial primary key,
+user_id bigint,
+product_id bigint,
+quantity integer,
+total_cost double precision,
+constraint fk_user_id foreign key (user_id) references E_commerce_users(id),
+constraint fk_product_id foreign key (product_id) references products(id)
+);
+
+insert into orders(user_id ,product_id,quantity,total_cost)values(1,1,2,80.0);
+insert into orders(user_id ,product_id,quantity,total_cost)values(2,2,1,70.0);
+insert into orders(user_id ,product_id,quantity,total_cost)values(3,4,1,1000020.00);
+insert into orders(user_id ,product_id,quantity,total_cost)values(4,3,1,30000);
+
+
+
+-- 3 Zomato
+drop table address_zomato;
+
+create table address_zomato(
+id bigserial primary key,
+local_address varchar(30),
+hint varchar(30),
+city varchar(30)
+);
+
+insert into address_zomato(local_address,hint,city) values('Yashoda nagar','Near lifeline hospital','Amravati');
+insert into address_zomato(local_address,hint,city) values('Jivam jyoti colony','Hari om apratment','Amravati');
+insert into address_zomato(local_address,hint,city) values('Shivaji nagar','Near goghle glocery store','Pune');
+insert into address_zomato(local_address,hint,city) values('Kalyan nagar','','Amravati');
+
+
+
+
+drop table zomato_user;
+
+create table zomato_user(
+id bigserial primary key,
+name varchar(30),
+email varchar(30),
+address bigint,
+role_as varchar(30),
+constraint fk_address foreign key (address) references address_zomato(id));
+
+
+insert into zomato_user(name,email,role_as,address) values('Shreyash','shreyash@gmail,com','Customer',1);
+insert into zomato_user(name,email,role_as,address) values('Aditya','aditys@gmail,com','Customer',2);
+insert into zomato_user(name,email,role_as,address) values('Yogesh','yogesh@gmail,com','Agent',3);
+insert into zomato_user(name,email,role_as,address) values('Soham','soham@gmail,com','Hotal_wala',4);
+
+
+drop table hotel;
+
+create table hotel(
+id bigserial primary key,
+name varchar(40),
+address bigint,
+constraint fk_address foreign key (address) references address(id)
+);
+
+insert into hotel (name,address) values ('Hotel Eagle',3);
+insert into hotel (name,address) values ('Rajgiri hotel',2);
+insert into hotel (name,address) values ('taj',1);
+insert into hotel (name,address) values ('Up and above',4);
+
+
+--create table food_item;
+drop table food_items;
+
+create table food_items(
+id bigserial primary key,
+name varchar(30),
+price double precision,
+from_hotel bigint,
+constraint fk_from_hotel foreign key (from_hotel) references hotel(id));
+
+insert into food_items (name , price,from_hotel) values ('Pizza',200.0,1);
+insert into food_items (name , price,from_hotel) values ('Burger',300.0,2);
+insert into food_items (name , price,from_hotel) values ('Pasta',400.0,3);
+insert into food_items (name , price,from_hotel) values ('Coke',100.0,4);
+
+--create table orders;
+drop table zomato_orders;
+create table zomato_orders(
+id bigserial primary key,
+user_id bigint,
+food_item_id bigint,
+quantity integer,
+total_cost double precision,
+constraint fk_user_id foreign key (user_id) references zomato_user(id),
+constraint fk_food_item_id foreign key (food_item_id) references food_items(id)
+);
+
+insert into zomato_orders(user_id,food_item_id,quantity,total_cost) values(1,2,1,100.00);
+insert into zomato_orders(user_id,food_item_id,quantity,total_cost) values(2,2,1,200.00);
+insert into zomato_orders(user_id,food_item_id,quantity,total_cost) values(3,1,1,200.00);
+insert into zomato_orders(user_id,food_item_id,quantity,total_cost) values(4,3,2,800.00);
+ 
+--hotel
+
+
+--4 INSTA
+drop table insta_user1;
+
+create table insta_user1(
+name varchar(50) primary key,
+followers bigint,
+following bigint,
+bio varchar(60),
+created_at timestamp);
+
+insert into insta_user1(name,followers,following,bio,created_at) values('shreyash','100','100','BE HAPPY','2022-8-19 11:10:1');
+insert into insta_user1(name,followers,following,bio,created_at) values('soham','200','40','BE HAPPY','2022-8-19 11:10:1');
+insert into insta_user1(name,followers,following,bio,created_at) values('yogesh','300','500','BE HAPPY','2022-8-19 11:10:1');
+insert into insta_user1(name,followers,following,bio,created_at) values('aditya','400','300','BE HAPPY','2022-8-19 11:10:1');
+
+create table location(
+id bigserial primary key,
+location varchar(30));
+
+insert into location(location) values('Amravati');
+insert into location(location) values('Pune');
+insert into location(location) values('Mumbai');
+insert into location(location) values('Kolhapur');
+insert into location(location) values('Ahmedabad');
+
+drop table insta_post1;
+
+create table insta_post1(
+id bigserial primary key,
+--image bytea,
+posted_by varchar(50),
+posted_at timestamp,
+location bigint,
+constraint fk_user_name foreign key (posted_by) references insta_user1(name),
+constraint fk_location foreign key (location) references location(id)
+);
+
+insert into insta_post1(posted_by,posted_at,location) values('shreyash','2022-8-19 11:10:1',1);
+insert into insta_post1(posted_by,posted_at,location) values('soham','2022-8-19 11:10:1',2);
+insert into insta_post1(posted_by,posted_at,location) values('aditya','2022-8-19 11:10:1',3);
+
+
+drop table like_on_post;
+
+create table like_on_post(
+id bigserial primary key,
+post_id bigint,
+liked_by varchar(50),
+time timestamp,
+constraint fk_liked_by foreign key (liked_by) references insta_user1(name),
+constraint fk_post_id foreign key (post_id) references insta_post1(id)
+);
+
+insert into like_on_post (post_id,liked_by,time) values(1,'aditya','2022-8-19 11:10:1');
+insert into like_on_post (post_id,liked_by,time) values(2,'shreyash','2022-8-19 11:10:1');
+insert into like_on_post (post_id,liked_by,time) values(3,'soham','2022-8-19 11:10:1');
+
+drop table comment;
+
+create table comment(
+id bigserial primary key,
+post_id bigint,
+commented_by varchar(50),
+comment varchar(60),
+commented_at timestamp,
+constraint fk_commented_by foreign key (commented_by) references insta_user1(name),
+constraint fk_post_id foreign key (post_id) references insta_post1(id)
+);
+
+insert into comment(post_id,commented_by,comment,commented_at) values(1,'aditya','Dope','2022-8-19 11:10:1');
+insert into comment(post_id,commented_by,comment,commented_at) values(2,'shreyash','Awesome','2022-8-19 11:10:1');
+insert into comment(post_id,commented_by,comment,commented_at) values(3,'soham','Cool','2022-8-19 11:10:1');
+
+
+
+
+drop table users;
+
+create table users(
+id bigserial primary key,
+name varchar(30),
+role varchar(30),
+account_created_at timestamp);
+
+insert into users(name,role,account_created_at) values ('Shreyash','Singer','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Soham','Listener','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Aditya','Listener','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Yogesh','Singer','2022-8-19 11:10:1');
+
+drop table songs ;
+
+create table songs(
+id bigserial primary key,
+name varchar(30),
+category varchar(30),
+singer bigserial,
+constraint fk_singer foreign key(singer) references users(id));
+
+truncate table songs;
+
+insert into songs(name,category,singer) values('Excuses','Sad',1);
+insert into songs(name,category,singer) values('Lofi music','Romantic',4);
+insert into songs(name,category,singer) values('Sprits','Sad',4);
+insert into songs(name,category,singer) values('Arcade','Joyful',1);
+
+
+drop table album;
+
+create table album(
+id bigserial primary key,
+song bigint unique,
+constraint fk_song foreign key (song) references songs(id)
+);
+
+insert into album(song) values (5);
+insert into album(song) values (6);
+insert into album(song) values (7);
+insert into album(song) values (8);
+
+
+
+drop table playlist;
+create table playlist(
+id bigserial primary key,
+name varchar(30),
+created_by bigint,
+song0 bigint,
+song1 bigint,
+song2 bigint,
+song3 bigint,
+song4 bigint,
+song5 bigint,
+song6 bigint,
+song7 bigint,
+song8 bigint,
+song9 bigint,
+song10 bigint,
+song11 bigint,
+song12 bigint,
+constraint fk_created_by foreign key (created_by) references users(id),
+constraint fk_song0 foreign key (song0) references songs(id),
+constraint fk_song1 foreign key (song1) references songs(id),
+constraint fk_song2 foreign key (song2) references songs(id),
+constraint fk_song3 foreign key (song3) references songs(id),
+constraint fk_song4 foreign key (song4) references songs(id),
+constraint fk_song5 foreign key (song5) references songs(id),
+constraint fk_song6 foreign key (song6) references songs(id),
+constraint fk_song7 foreign key (song7) references songs(id),
+constraint fk_song8 foreign key (song8) references songs(id),
+constraint fk_song9 foreign key (song9) references songs(id),
+constraint fk_song10 foreign key (song10) references songs(id),
+constraint fk_song11 foreign key (song11)references songs(id),
+constraint fk_song12 foreign key (song12) references songs(id));
+
+insert into playlist(name,created_by,song0,song1,song2,song3) values ('My_playlist',2,1,2,3,4);
+insert into playlist(name,created_by,song0,song1) values ('2nd_playlist',3,3,4);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--Spotify
+
+drop table users;
+
+create table users(
+id bigserial primary key,
+name varchar(30),
+role varchar(30),
+account_created_at timestamp);
+
+insert into users(name,role,account_created_at) values ('Shreyash','Singer','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Soham','Listener','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Aditya','Listener','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Yogesh','Singer','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Sagar','Singer','2022-8-19 11:10:1');
+insert into users(name,role,account_created_at) values ('Pratik','Singer','2022-8-19 11:10:1');
+
+
+create table song(
+id bigserial primary key,
+name varchar(40),
+singed_by bigint,
+constraint fk_singer_name foreign key (singed_by) references users(id));
+
+insert into song(name,singed_by) values('Excuses',1);
+insert into song(name,singed_by) values('Sprits',4);
+insert into song(name,singed_by) values('Arcade',5);
+insert into song(name,singed_by) values('Lofi music',6);
+
+
+create table albums(
+id bigserial primary key,
+name varchar(30));
+
+insert into albums (name) values ('Sad');
+insert into albums (name) values ('Joyful');
+insert into albums (name) values ('Motivational');
+insert into albums (name) values ('Peaceful');
+insert into albums (name) values ('Romantic');
+
+drop table specific_album;
+
+create table specific_album(
+id bigserial primary key,
+album_id bigint,
+song_id bigint,
+constraint fk_album_id foreign key (album_id) references albums(id),
+constraint fk_song_id foreign key (song_id) references song(id),
+constraint fk_unique_song_album_id unique(album_id,song_id));
+
+insert into specific_album(album_id,song_id) values (2,1);
+insert into specific_album(album_id,song_id) values (1,3);
+insert into specific_album(album_id,song_id) values (4,2);
+insert into specific_album(album_id,song_id) values (5,4);
+insert into specific_album(album_id,song_id) values (2,3);
+insert into specific_album(album_id,song_id) values (2,4);
+
+
+
+
+--student
+create table student3(
+id bigserial primary key,
+name varchar(30),
+department varchar(30));
+
+insert into student3(name,department) values ('Shreyash','CM');
+insert into student3(name,department) values ('Soham','CM');
+insert into student3(name,department) values ('Yogesh','CM');
+insert into student3(name,department) values ('Aditya','CM');
+
+
+create table CM_department(
+d_id bigserial primary key,
+id bigint,
+constraint fk_student_id foreign key (id) references student3 (id));
+
+insert into CM_department(id) values  (1);
+insert into CM_department(id) values (2);
+insert into CM_department(id) values (3);
+insert into CM_department(id) values (4);
+
+
+select * from student3 s inner join CM_department c on s.id = c.id;
+select * from student3 natural join cm_department ;
+
+alter table CM_department rename id to student_id;
+select * from student3 natural join cm_department ;
+--when the name of  the commmon column is not same then the natural join acts as a cross join
+
+
+--group by clause
+--for data grouping and data aggregation. 
+--its divides ths set of groups of rows and aggregate functions perform the calculation on each row
+select sum(salary) ,city from employee group by city;
+
+
+
+--Having clause
+--we cant use where with aggregate function 
+--filter with group
+select sum(salary) from employee group by city having sum(salary) > 22000;
+
+
+--is null clause
+create table student2(
+id bigserial primary key,
+name varchar(30),
+address varchar);
+
+
+insert into student2(name,address) values('shreyash','Yashoda nagar');
+insert into student2(name,address) values('soham','Yashoda nagar');
+insert into student2(name) values('aditya');
+insert into student2(name) values('yogesh');
+
+select * from student2 where address = null;
+--because null is not an value thatswhy we can't use it with = operator
+--= null === false
+
+select * from student2 where address is null;
+select * from student2 where address is not null;
+
+--JOINS
+--join clause is used to combine rows/columns from 2 or more tables based on related columns between them.
+--common column = foreign key
+--types -1.inner join 
+--2.LEFT JOIN/LEFT outer join
+--
+
+
+--table aliases
+--giving a name temporary name to a table
+--as for column
+select s.name as n,s.address as a,s+.id as i from student2 s; 
+
+
+
+create table department(
+id bigserial primary key,
+name varchar(30));
+
+insert into department(name) values ('COMP');
+insert into department(name) values ('IT');
+insert into department(name) values ('EXTC');
+
+
+create table emp(
+id bigserial primary key,
+name varchar(30),
+salary integer,
+d_id bigint,
+constraint fk_d_id foreign key (d_id) references department(id));
+
+insert into emp(name,salary,d_id) values ('A',1000,1);
+insert into emp(name,salary,d_id) values ('B',2000,1);
+insert into emp(name,salary,d_id) values ('C',3000,2);
+insert into emp(name,salary) values ('D',4000);
+
+
+--to avoid the ambigious 
+--inner 
+select e.id ,e.name ,d.name as dep_name,salary from emp e inner join department d on e.d_id = d.id where (salary) >1000 order by name desc limit 1;
+
+
+select emp.id , emp.name,department.name,salary from emp left join department on emp.d_id = department.id;
+
+
+select emp.id , emp.name,department.name,salary from emp right join department on emp.d_id = department.id;
+
+
+--cross join 
+--cartician join
+select emp.id , emp.name,department.name,salary from emp cross join department ;
+select emp.id , emp.name,department.name,salary from emp, department ;
+select emp.id , emp.name,department.name,salary from emp inner join department on true ;
+
+--full join
+select emp.id , emp.name,department.name,salary from emp full join department on emp.d_id = department.id;
+
+
+
+
+
+--REDBUS
+
+
+create table redbus_user(
+7id bigserial primary key,
+name varchar(30),
+role varchar(30),
+email varchar(30)
+);
+
+insert into redbus_user(name,role,email) values ('Shreyash','Agent','s@gmail.com');
+insert into redbus_user(name,role,email) values ('Soham','Passenger','so@gmail.com');
+insert into redbus_user(name,role,email) values ('Aditya','Passenger','a@gmail.com');
+insert into redbus_user(name,role,email) values ('Sagar','Passenger','sa@gmail.com');
+insert into redbus_user(name,role,email) values ('Yogesh','Agent','y@gmail.com');
+insert into redbus_user(name,role,email) values ('Shreya','Passenger','sh@gmail.com');
+
+
+create table buses(
+id bigserial primary key,
+name varchar(30),
+agent_id bigint,
+seats bigint,
+price double precision,
+constraint fk_agent_id foreign key (agent_id) references redbus_user(id));
+
+insert into buses(name,agent_id,seats,price) values ('Nagpur to Ahmedabad',1,50,2000.00);
+insert into buses(name,agent_id,seats,price) values ('Nagpur to Pune',5,80,5000.00);
+insert into buses(name,agent_id,seats,price) values ('Amravati to Nagpure',5,50,3500.00);
+insert into buses(name,agent_id,seats,price) values ('MP to Ahmedabad',1,90,4000.00);
+insert into buses(name,agent_id,seats,price) values ('Nagpur to MP',5,50,28000.00);
+
+
+create table reservation(
+id bigserial primary key,
+passenger_id bigint,
+bus_id bigint,
+seat_no bigint,
+amount_paid double precision,
+booking_on timestamp,
+constraint fk_passenger_id foreign key (passenger_id) references redbus_user(id),
+constraint fk_bus_id foreign key (bus_id) references buses(id));
+
+
+insert into reservation(passenger_id,bus_id,seat_no,amount_paid,booking_on) values(2,1,4,2000.0,'2022-8-19 11:10:1');
+insert into reservation(passenger_id,bus_id,seat_no,amount_paid,booking_on) values(3,2,1,4000.0,'2022-8-19 11:10:1');
+insert into reservation(passenger_id,bus_id,seat_no,amount_paid,booking_on) values(4,3,4,2000.0,'2022-8-19 11:10:1');
+insert into reservation(passenger_id,bus_id,seat_no,amount_paid,booking_on) values(2,4,4,2500.0,'2022-8-19 11:10:1');
+insert into reservation(passenger_id,bus_id,seat_no,amount_paid,booking_on) values(4,2,4,3500.0,'2022-8-19 11:10:1');
+
+
+
+
+--BANK DB
+
+create table bank(
+id bigserial primary key,
+name varchar(40),
+ifsc_code bigint,
+misc_code bigint
+);
+
+insert into bank(name,ifsc_code,misc_code)values('SBI',354245,09870);
+insert into bank(name,ifsc_code,misc_code)values('icici',45678,56678);
+insert into bank(name,ifsc_code,misc_code)values('union',09876,98765);
+insert into bank(name,ifsc_code,misc_code)values('bob',34556,98798);
+insert into bank(name,ifsc_code,misc_code)values('axis',23456,98765);
+
+create table bank_user(
+id bigserial primary key,
+name varchar(40),
+balance double precision,
+account_in bigint,
+acc_created_at timestamp,
+constraint fk_bank_id foreign key (account_in) references bank(id));
+
+insert into bank_user(name,balance,account_in,acc_created_at) values ('Shreyash',10989,1,'2022-8-19 11:10:1');
+insert into bank_user(name,balance,account_in,acc_created_at) values ('Soham',45678,2,'2022-8-19 11:10:1');
+insert into bank_user(name,balance,account_in,acc_created_at) values ('Aditya',5434,3,'2022-8-19 11:10:1');
+insert into bank_user(name,balance,account_in,acc_created_at) values ('Yogesh',876,4,'2022-8-19 11:10:1');
+insert into bank_user(name,balance,account_in,acc_created_at) values ('Sagar',3122,5,'2022-8-19 11:10:1');
+
+create table transition(
+id bigserial primary key,
+type varchar(30),
+from_uid bigint,
+to_uid bigint,
+amount double precision,
+time timestamp,
+constraint fk_from_uid foreign key (from_uid) references bank_user(id),
+constraint fk_to_uid foreign key (from_uid) references bank_user(id)
+);
+
+insert into transition(type,from_uid,to_uid,amount,time) values('Send',1,2,4322,'2022-8-19 11:10:1');
+insert into transition(type,from_uid,to_uid,amount,time) values('Receive',2,1,543,'2022-8-19 11:10:1');
+insert into transition(type,from_uid,to_uid,amount,time) values('Receive',1,3,6543,'2022-8-19 11:10:1');
+insert into transition(type,from_uid,to_uid,amount,time) values('Send',3,2,432,'2022-8-19 11:10:1');
+insert into transition(type,from_uid,to_uid,amount,time) values('Receive',1,4,4322,'2022-8-19 11:10:1');
+insert into transition(type,from_uid,to_uid,amount,time) values('Send',1,2,6543,'2022-8-19 11:10:1');
+
+
+
+--union
+--combine column vertically and remove the redundancy
+--if we want all data including duplicates
+then union all
+--column must have same datatype
+--number of column must have in same order and same datatype
+select name from student2 union  select name from student3;
+
+select name from student2 union all select name from student3;
+
+select name from student3 union select address from student2;
+
+--error wali 
+select name from student3 union select id from student2;
+
+
+--intersect
+select name from student2 intersect select name from student3;
+
+--expect
+--substraction
+--it not consider the 2nd table
+select name from student2 except select name from student3;
+
+
+
+
+
+truncate table shreya;
+
+insert into shreya(id,name) values (1,'Shreyash');
+insert into shreya(id,name) values (2,'Soham');
+insert into shreya(id,name) values (3,'Yogesh');
+insert into shreya(id,name) values (4,'Aditya');
+insert into shreya(id,name) values (5,'Sagar');
+
+
+
+
+
+
+
+------------------------------------------------------------------
+
+create table username(id bigserial, name varchar(30), password varchar(30) );
+insert into username(name,password) values('akash','abc123');
+insert into username(name,password) values('shreyash','xyz123');
+
+
+
+
+
+
+
+
+
+
+
+
+--Callalel statement
+
+create or replace procedure INSERTR
+(id int, name varchar(30)) 
+language plpgsql as $$
+begin 
+	insert into shreya values (id,name);
+end; $$;
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+drop table employee;
+create table employee(empId bigserial ,empName varchar(30),dob date,designation varchar(40));
+
+insert into employee (empName,dob,designation) values ('Shreyash','2004-10-14','CEO'),('Soham','2004-8-14','Manager'),
+('Aditya','2004-10-20','Employee');
+
+
+
+
+update employee set salary = salary+((salary*5)/100) ;
+
+use employee;
+commit;
+
+rollback;
+
+
+create table depart (salary int,dept varchar(10));
+
+select dept, avg(salary) from depart group by dept;
+
+alter table employee add column dept varchar(20);
+
+insert into employee (name,salary ,city,dept) values ('ijhi',989,'jdfjj','CM');
+
+insert into depart (salary ,dept) values (989,'ME');
+insert into depart (salary ,dept) values (9839,'CM');
+insert into depart (salary ,dept) values (3424,'CM');
+insert into depart (salary ,dept) values (959,'EE');
+insert into depart (salary ,dept) values (979,'CE');
+
+
+create table abc (name varchar(20),salary float,dept varchar(20));
+insert into abc (name,salary,dept) values('hkk',8998,'CC');
+insert into abc (name,salary,dept) values('hkk',0909,'CC');
+insert into abc (name,salary,dept) values('hkk',909,'CE');
+insert into abc (name,salary,dept) values('hkk',677868,'CE');
+insert into abc (name,salary,dept) values('hkk',8787,'ME');
+insert into abc (name,salary,dept) values('hkk',5343,'MC');
+insert into abc (name,salary,dept) values('hkk',8998,'CC');
+
+select dept, avg(salary) from abc group by dept;
+
+select * from abc;
+desc table abc;
+
+
+
+
+
+
+
+
+
+
+
+create sequence sq start with 1 increment by 2 minvalue 1 maxvalue 10 cycle;
+
+
+create table xx (id int,name varchar(20));
+
+update xx set id = next values for sq;
+
+
+
+
+
+
+
+
+
+drop table family;
+create table family (family_id varchar(1000) primary key, village varchar(20) not null, address text not null);
+
+create table gender (gender varchar(20));
+
+insert into gender (gender) values ('Other');
+select * from people;
+drop table people;
+create table people (user_id varchar(20) primary key, first_name varchar(20) not null, last_name varchar(20) not null, family_id varchar(20) not null, gender varchar(20) not null, dob varchar(20) not null, mobile_no varchar(12) not null unique, blood_grp varchar(20) not null, email text unique);
+insert into people (user_id,first_name,last_name,family_id,gender,dob,email) values ('8','Soham','Ambarte','10','Male',)
+select * from villages ;
+
+
+create table tbl (name varchar(20));
+
+insert into tbl (name) values ('people');
+
+select * from villages;
+create table column_village (name varchar(20));
+insert into column_village (name) values ('village_code');
+
+drop table villages ;
+
+
+create table villages (village_id varchar(20), village_name varchar(30), village_code varchar(30));
+
+
+
+create table user_col (name varchar(30));
+
+
+insert into user_col (name) values('email');
+select * from user_col;
+
+drop table medicine;
+
+select * from medicine;
+
+create table disposable (disposable_name varchar(20), quantity int, insert_date timestamp default CURRENT_TIMESTAMP);
+
+
+create table etc (etc_name varchar(20), quantity int, insert_date timestamp default CURRENT_TIMESTAMP);
+
+insert into xyz (d) values (NOW());
+
+select * from stationary;
+
+
+
+
+create table med (med_id varchar(20),med_name varchar(20),quantity int);
+
+
+insert into med (med_id,med_name,quantity) values ('1','Dolo',100);
+
+
+
+
+
+select * from med;
+
+drop table med;
+
+
+create table med (med_name varchar(20));
+
+insert into med (med_name) values ('abc');
+drop table opd
+
+create table opd (serial_no bigserial unique,patient_name varchar(20),symptoms varchar(100), med1 varchar(20),quantity_1 int,med2 varchar(20),quantity_2 int,med3 varchar(20),quantity_3 int,med4 varchar(20),quantity_4 int,med5 varchar(20),quantity_5 int,med6 varchar(20),quantity_6 int , date_time timestamp default CURRENT_TIMESTAMP);
+
+
+
+
+
+
+
+select * from opd;
+select * from medicine m ;
+
+create table patient_name (name varchar(50));
+
+select * from stationary;
+
+drop table medicine;
+create table medicine (medicine_id varchar(20), medicine_name varchar(20), quantity int, expiry_date varchar(20),insert_date timestamp default CURRENT_TIMESTAMP);
+select * from medicine ;
+create table medicine_col (name varchar(20));
+select * from medicine_col;
+insert into medicine_col (name) values ('quantity');
+delete from medicine_col where name='quantity';
+
+
+
+delete from stationary where insert_date = '2023-03-14';
+
+
+create table  (name varchar(20));
+insert into column_stationary (name) values  ('insert_date')
+
+
+select  * from disposable d ;
+
+
+create table column_etc (name varchar(20));
+
+
+insert into column_etc (name) values ('insert_date');
+
+
+select * from disposable;
+
+select * from people;
+drop table villages ;
+create table villages (village_id varchar(20) primary key, village_name varchar(20) not null, village_code varchar(20) not null unique);
+
+
+
+
+select * from stationary s ;
+drop table disposable  ;
+
+create table medicine (medicine_id varchar(20) primary key,medicine_name varchar(30) not null unique,quantity varchar(50) not null, expiry_date varchar not null, insert_date timestamp default CURRENT_TIMESTAMP );
+
+create table disposable  (disposable_name varchar(20) ,quantity varchar(50) not null , insert_date timestamp default CURRENT_TIMESTAMP );
+
+create table archive_village (village_id varchar(20) , village_name varchar(20) not null, village_code varchar(20) not null unique)
+
+create trigger mytrig_village after delete on villages for each row execute  procedure archive_village(old.village_id,old.village_name,old.
+village_code) ;
+
+
+
+create procedure archive_village (village_id varchar(20),village_name varchar(20),village_code varchar(20))
+language 'plpgsql'
+as $$
+begin
+	insert into archive_village values (village_id,village_name,village_code);
+end;
+$$;
+
+
+create trigger village_archive_triggu before delete on villages for each row execute function vill_function();
+
+drop trigger village_archive_trigg;
+
+create function vill_function() returns trigger as $village$
+begin
+	insert into archive_village (village_id,village_name,village_code) values (new.village_id,new.village_name,new.village_code);
+	return new;
+end;
+$village$ language plpgsql;
+
+
+select * from medicine_col mc  ;
+
+delete from villages where village_id ='AK';
+
+create table villages (village_id varchar(20),village_name varchar(20),village_code varchar(20))
+
+drop table doctor;
+
+
+create table doctor (id varchar(20) primary key, first_name varchar(20) not null, last_name varchar(20) not null , password varchar(15)  not null, email varchar(20) unique not null);
+
+select * from doctor d ;
+insert into doctor (id,first_name,last_name,password,email) values (1,'Shreyash','Gajbhiye','123@','xyz@gmail.com');
+
+
+
+
+
+//important inventory
+create table medicine (medicine_id bigserial  , medicine_name varchar(20) primary key, quantity int, expiry_date varchar(50), insert_date timestamp default CURRENT_TIMESTAMP) ;
+
+create table stationary (stationary_name varchar(30) primary key,quantity int , insert_date timestamp default CURRENT_TIMESTAMP);
+
+create table disposable (disposable_name varchar(30) primary key,quantity int , insert_date timestamp default CURRENT_TIMESTAMP);
+
+create table etc (etc_name varchar(30) primary key,quantity int , insert_date timestamp default CURRENT_TIMESTAMP);
+
+
+//important database
+
+create table villages (village_id varchar(50) unique, village_name varchar(40) unique, village_code varchar(20) unique);
+
+create table family (family_id varchar(40) , village varchar(30),address text);
+
+
+create table blood_group (name varchar(20));
+
+insert into blood_group (name) values ('A+'),('B+'),('AB+'),('A-'),('B-'),('AB-'),('O+'),('O-');
+
+create table people (user_id bigserial primary key , first_name varchar(30) not null, last_name varchar(30), family_id varchar(20), gender varchar(10), dob varchar(30), mobile_no varchar(12) unique, blood_grp varchar(10),email text );
+
+create table patient_name (name varchar(20);
+
+
+//triggers
+//medicine tigger ;
+
+
+
+create table medicine_archive (medicine_id int  , medicine_name varchar(20), quantity int, expiry_date varchar(50), insert_date date) ;
+
+create trigger del_medicine_trigger after delete on medicine for each row execute procedure del_medicine();
+
+create function del_medicine() returns trigger as $$
+	begin
+		insert into medicine_archive values (old.medicine_id,old.medicine_name,old.quantity,old.expiry_date,old.insert_date);
+		return new;
+	end;
+$$ language plpgsql;
+	
+ 
+	
+
+//delete from medicine_archive where medicine_name ='VICKS';
+//select * from medicine_archive;
+
+
+
+
+//stationary trigger;
+create table stationary_archive (stationary_name varchar(30) ,quantity int , insert_date date);
+
+create trigger del_stationary_trigger after delete on stationary for each row execute procedure del_stationary();
+
+create function del_stationary() returns trigger as $$
+	begin
+		insert into stationary_archive values (old.stationary_name,old.quantity,old.insert_date);
+		return new;
+	end;
+$$ language plpgsql;
+
+	
+
+//disposable trigger
+
+create table disposable_archive (disposable_name varchar(30) ,quantity int , insert_date date);
+
+create trigger del_disposable_trigger after delete on disposable for each row execute procedure del_disposable();
+
+create function del_disposable() returns trigger as $$
+	begin
+		insert into disposable_archive values (old.disposable_name,old.quantity,old.insert_date);
+		return new;
+	end;
+$$ language plpgsql;
+
+
+
+//etc teigger;
+
+create table etc_archive (etc_name varchar(30) ,quantity int , insert_date date);
+
+create trigger del_etc_trigger after delete on etc for each row execute procedure del_etc();
+
+create function del_etc() returns trigger as $$
+	begin
+		insert into etc_archive values (old.etc_name,old.quantity,old.insert_date);
+		return new;
+	end;
+$$ language plpgsql;
+
+
+
+//trigger village;
+
+create table villages_archive (village_id varchar(50) , village_name varchar(40) , village_code varchar(20) );
+
+create trigger del_village_trigger after delete on villages for each row execute procedure del_village();
+
+create function del_village() returns trigger as $$
+	begin
+		insert into villages_archive values (old.village_id,old.village_name,old.village_code);
+		return new;
+	end;
+$$ language plpgsql;
+
+
+
+//trigger family
+
+create table family_archive (family_id varchar(40) , village varchar(30),address text);
+
+
+create trigger del_family_trigger after delete on family for each row execute procedure del_family();
+
+create function del_family() returns trigger as $$
+	begin
+		insert into family_archive values (old.family_id,old.village,old.address);
+		return new;
+	end;
+$$ language plpgsql;
+
+
+select * from family_archive;
+
+
+//trigger user;
+
+create table people_archive (user_id bigserial  , first_name varchar(30) , last_name varchar(30), family_id varchar(20), gender varchar(10), dob varchar(30), mobile_no varchar(12) , blood_grp varchar(10),email text );
+
+
+create trigger del_user_trigger after delete on people for each row execute procedure del_user();
+
+create function del_user() returns trigger as $$
+	begin
+		insert into people_archive values (old.user_id,old.first_name,old.last_name,old.family_id,old.gender,old.dob,old.mobile_no,old.blood_grp,old.email);
+		return new;
+	end;
+$$ language plpgsql;
+
+
+
+select * from people ;
+
+create table column_print_database(name varchar(20));
+insert into column_print_database(name) values ('villages'),('people'),('family');
+
+select * from doctor ;
+copy public.medicine to 'D:\data.csv' delimiter ',' csv header;
+
+insert into doctor (id,first_name,last_name,password,email) values ('2','Ankush','Mankar','12345','mankar@gmail.com');
+
+
+
+create table admin (id varchar(20),first_name varchar(20), last_name varchar(20),email varchar(20),password varchar(20));
+
+
+insert into admin (id,first_name,last_name,email,password) values ('1','Shreyash','Gajbhiye','shreyash@gmail.com','admin');
+
+
+
+
+create table super_admin(id bigserial,first_name varchar(20),last_name varchar(20),email text,password varchar(20));
+
+insert into super_admin(first_name,last_name,email,password) values ('Shreyash','Gajbhiye','shreyash@gmail.com','admin');
+
+select * from "admin" a   ;
